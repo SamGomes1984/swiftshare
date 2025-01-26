@@ -1,24 +1,10 @@
 import React from 'react';
-import FileUpload from '../components/FileUpload';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { toast } from 'sonner';
 
 const StorageShare = () => {
   const navigate = useNavigate();
-  const isLoggedIn = false; // This will be replaced with actual auth state later
-
-  React.useEffect(() => {
-    if (!isLoggedIn) {
-      toast.error('Please log in to use temporary storage');
-      navigate('/');
-    }
-  }, [isLoggedIn, navigate]);
-
-  if (!isLoggedIn) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -37,14 +23,25 @@ const StorageShare = () => {
             Temporary Storage Sharing
           </h1>
           <p className="text-lg text-gray-600">
-            Upload files for 1-hour temporary storage
+            Please log in to use temporary storage sharing
           </p>
         </div>
         
-        <FileUpload />
+        <div className="max-w-md mx-auto text-center">
+          <Button
+            size="lg"
+            className="w-full"
+            onClick={() => {
+              // TODO: Implement login functionality
+              console.log('Login clicked');
+            }}
+          >
+            Log in to Continue
+          </Button>
+        </div>
         
         <div className="mt-12 text-center text-sm text-gray-500">
-          <p>Files are automatically deleted after 1 hour • Max file size: 500MB</p>
+          <p>Files are stored for 1 hour • Maximum file size: 500MB</p>
         </div>
       </div>
     </div>
