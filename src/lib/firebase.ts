@@ -15,8 +15,13 @@ const saveFirebaseConfig = (config: any) => {
   localStorage.setItem('firebaseConfig', JSON.stringify(config));
 };
 
+// Clear any existing config to force new prompts
+localStorage.removeItem('firebaseConfig');
+
 // Initialize with stored config or prompt user
 const storedConfig = getFirebaseConfig();
+let firebaseConfig;
+
 if (!storedConfig) {
   const config = {
     apiKey: prompt('Please enter your Firebase API Key:'),
@@ -29,17 +34,23 @@ if (!storedConfig) {
   
   if (config.apiKey && config.authDomain && config.projectId) {
     saveFirebaseConfig(config);
+    firebaseConfig = config;
   }
+} else {
+  firebaseConfig = storedConfig;
 }
 
-const firebaseConfig = getFirebaseConfig() || {
-  apiKey: "DEMO_MODE",
-  authDomain: "DEMO_MODE",
-  projectId: "DEMO_MODE",
-  storageBucket: "DEMO_MODE",
-  messagingSenderId: "DEMO_MODE",
-  appId: "DEMO_MODE"
-};
+// Fallback to demo mode if no config is available
+if (!firebaseConfig) {
+  firebaseConfig = {
+    apiKey: "DEMO_MODE",
+    authDomain: "DEMO_MODE",
+    projectId: "DEMO_MODE",
+    storageBucket: "DEMO_MODE",
+    messagingSenderId: "DEMO_MODE",
+    appId: "DEMO_MODE"
+  };
+}
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
