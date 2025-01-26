@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage } from '@/lib/firebase';
 import DropZone from './DropZone';
 import ProgressBar from './ProgressBar';
 import FileInfo from './FileInfo';
@@ -16,22 +18,34 @@ const FileUpload = () => {
       return;
     }
     setFile(selectedFile);
-    simulateUpload();
+    uploadFile(selectedFile);
   };
 
-  const simulateUpload = () => {
-    setUploadProgress(0);
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          // Generate a temporary link (this would normally come from the server)
-          setShareLink(`https://example.com/share/${Math.random().toString(36).substring(7)}`);
-          return 100;
+  const uploadFile = async (file: File) => {
+    const storageRef = ref(storage, `uploads/${Date.now()}-${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploadProgress(progress);
+      },
+      (error) => {
+        console.error('Upload error:', error);
+        toast.error('Failed to upload file');
+      },
+      async () => {
+        try {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setShareLink(downloadURL);
+          toast.success('File uploaded successfully!');
+        } catch (error) {
+          console.error('Error getting download URL:', error);
+          toast.error('Failed to generate share link');
         }
-        return prev + 10;
-      });
-    }, 500);
+      }
+    );
   };
 
   const handleRemoveFile = () => {
@@ -52,7 +66,7 @@ const FileUpload = () => {
             <div className="space-y-2">
               <ProgressBar progress={uploadProgress} />
               <p className="text-sm text-gray-500 text-center">
-                Uploading... {uploadProgress}%
+                Uploading... {Math.round(uploadProgress)}%
               </p>
             </div>
           )}
