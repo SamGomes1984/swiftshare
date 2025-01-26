@@ -1,5 +1,5 @@
 import React from 'react';
-import FileUpload from '../components/FileUpload';
+import SharingOptions from '../components/SharingOptions';
 
 const Index = () => {
   return (
@@ -14,10 +14,10 @@ const Index = () => {
           </p>
         </div>
         
-        <FileUpload />
+        <SharingOptions />
         
         <div className="mt-12 text-center text-sm text-gray-500">
-          <p>Upload files up to 500MB • Files automatically delete after 1 hour</p>
+          <p>Choose your preferred sharing method to get started</p>
         </div>
       </div>
     </div>
